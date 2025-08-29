@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcpmesh
+  namespace: mcpmesh
+  labels:
+    app: mcpmesh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcpmesh
+  template:
+    metadata:
+      labels:
+        app: mcpmesh
+    spec:
+      containers:
+      - name: mcpmesh
+        image: your-registry/mcpmesh:latest
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ASPNETCORE_URLS
+          value: "http://+:80"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi" 
+            cpu: "500m"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: mcpmesh-config
