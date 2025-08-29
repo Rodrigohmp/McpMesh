@@ -18,4 +18,7 @@ public class McpServerOptions
     public string DescriptionSuffix { get; set; } = string.Empty;
     public string ServerContext { get; set; } = string.Empty;
     public Dictionary<string, string> ToolOverrides { get; set; } = new();
+    
+    // Context provision options
+    public string ServerInstructions { get; set; } = string.Empty;
 }

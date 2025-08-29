@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 
@@ -8,4 +8,5 @@ public class McpClient
 {
     public IMcpClient Client { get; set; }
     public List<Tool> Tools { get; set; } = new();
+    public string ToolPrefix { get; set; } = string.Empty;
 }

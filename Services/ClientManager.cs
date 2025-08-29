@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using McpMesh.Configuration;
+using McpMesh.Extensions;
 using McpMesh.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -70,7 +71,8 @@ public class ClientManager : IClientManager
         var mcpClient = new McpClient
         {
             Client = client,
-            Tools = tools.Select(t => EnhanceToolWithServerContext(t, server)).ToList()
+            Tools = tools.Select(t => t.GetTool(server)).ToList(),
+            ToolPrefix = server.ToolPrefix
         };
         
         _clients[server.Id] = mcpClient;
@@ -95,7 +97,7 @@ public class ClientManager : IClientManager
                     server.Id, attempt, maxRetries);
                 
                 await InitializeClientAsync(server);
-                return; // Success
+                return;
             }
             catch (Exception ex)
             {
@@ -213,54 +215,6 @@ public class ClientManager : IClientManager
     {
         var clients = await GetClientsAsync(packageId);
         return clients.FirstOrDefault(c => c.Tools.Any(t => t.Name == toolName));
-    }
-
-    private Tool EnhanceToolWithServerContext(McpClientTool originalTool, McpServerOptions server)
-    {
-        var toolName = originalTool.Name;
-        var description = originalTool.Description ?? string.Empty;
-
-        // Apply tool-specific overrides first
-        if (server.ToolOverrides.TryGetValue(toolName, out var overrideName))
-        {
-            toolName = overrideName;
-        }
-        else if (!string.IsNullOrEmpty(server.ToolPrefix))
-        {
-            // Add prefix if no specific override
-            toolName = $"{server.ToolPrefix}_{toolName}";
-        }
-
-        // Enhance description with server context
-        if (!string.IsNullOrEmpty(server.ServerContext))
-        {
-            if (string.IsNullOrEmpty(description))
-            {
-                description = $"[{server.ServerContext}] {toolName}";
-            }
-            else
-            {
-                description = $"{description} [{server.ServerContext}]";
-            }
-        }
-
-        // Add description suffix if configured
-        if (!string.IsNullOrEmpty(server.DescriptionSuffix))
-        {
-            description = string.IsNullOrEmpty(description) 
-                ? server.DescriptionSuffix 
-                : $"{description} {server.DescriptionSuffix}";
-        }
-
-        _logger.LogDebug("Enhanced tool '{OriginalName}' -> '{NewName}' with description: {Description}", 
-            originalTool.Name, toolName, description);
-
-        return new Tool
-        {
-            Name = toolName,
-            Description = description,
-            InputSchema = originalTool.JsonSchema
-        };
     }
 
     public async ValueTask DisposeAsync()

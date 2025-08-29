@@ -58,10 +58,14 @@ public class ToolsHandler : IToolsHandler
     public async Task<CallToolResult> HandleCallToolAsync(RequestContext<CallToolRequestParams> context, string packageId, CancellationToken cancellationToken)
     {
         var toolName = context.Params?.Name;
-        
+        if (string.IsNullOrWhiteSpace(toolName))
+        {
+            _logger.LogError("CallTool request missing tool name");
+            throw new ArgumentException("Tool name is required.", nameof(context.Params.Name));
+        }
         _logger.LogInformation("CallTool request - Package: {PackageId}, Tool: {ToolName}", packageId, toolName);
         
-        if (_logger.IsEnabled(LogLevel.Debug) && context.Params?.Arguments != null)
+        if (context.Params?.Arguments != null)
         {
             var argsJson = JsonSerializer.Serialize(context.Params.Arguments);
             var truncatedArgs = argsJson.Length > 200 ? argsJson.Substring(0, 200) + "..." : argsJson;
@@ -69,18 +73,22 @@ public class ToolsHandler : IToolsHandler
         }
         
         var client = await _clientManager.GetClientAsync(packageId, toolName);
-
         if (client == null)
         {
             _logger.LogError("Tool '{ToolName}' not found in package '{PackageId}'", toolName, packageId);
             throw new InvalidOperationException($"Tool '{toolName}' not found in package '{packageId}'.");
         }
 
+        var originalToolName = toolName;
+        if (!string.IsNullOrEmpty(client.ToolPrefix) && toolName.StartsWith($"{client.ToolPrefix}_"))
+        {
+            originalToolName = toolName[(client.ToolPrefix.Length + 1)..];
+        }
+
         var arguments = context.Params?.Arguments?.ToDictionary(a => a.Key, a => (object)a.Value);
-        
         try
         {
-            var response = await client.Client.CallToolAsync(toolName, arguments, cancellationToken: cancellationToken);
+            var response = await client.Client.CallToolAsync(originalToolName, arguments, cancellationToken: cancellationToken);
             
             _logger.LogInformation("CallTool response - Tool: {ToolName}, Success: {IsSuccess}", 
                 toolName, response.IsError != true);
