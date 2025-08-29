@@ -60,10 +60,5 @@ data:
           "Iv": "generate-your-own-16-byte-base64-iv" 
         },
         "BaseUrl": "http://localhost:5293"
-      },
-      "SessionOptions": {
-        "SessionTimeoutMinutes": 30,
-        "CleanupIntervalMinutes": 5,
-        "MaxSessionsPerPackage": 10
       }
     }
