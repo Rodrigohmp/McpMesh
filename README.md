@@ -1,24 +1,21 @@
 # McpMesh
 
-A .NET 8 service that aggregates and exposes tools from multiple Model Context Protocol (MCP) servers through HTTP REST API, making them accessible to Claude Desktop and other MCP clients.
+A .NET 9 service for aggregating multiple Model Context Protocol (MCP) servers.
 
 ## Features
 
 - **Multi-MCP Aggregation**: Connect to multiple MCP servers simultaneously
-- **HTTP REST API**: Expose MCP tools through standard REST endpoints
-- **Claude Desktop Integration**: Compatible with Claude Desktop as an MCP connector
-- **Flexible Configuration**: Configure MCP servers via appsettings or Kubernetes ConfigMaps
-- **Health Monitoring**: Built-in health checks and status monitoring for each MCP server
-- **Authentication**: Optional authentication support for secure access
+- **MCP Protocol Support**: Exposes MCP protocol endpoints using ModelContextProtocol.AspNetCore
+- **Flexible Configuration**: Configure MCP servers via appsettings or Kubernetes ConfigMaps  
+- **Health Monitoring**: Built-in health endpoints for container orchestration
 - **Containerized**: Docker support with Kubernetes deployment manifests
 
 ## Quick Start
 
 ### Prerequisites
 
-- .NET 8 SDK
-- Node.js (for MCP servers that require it)
-- Docker (optional, for containerized deployment)
+- .NET 9 SDK
+- Node.js and Python (for MCP servers that require them)
 
 ### Local Development
 
@@ -28,46 +25,16 @@ git clone https://github.com/dmatvienco/McpMesh.git
 cd McpMesh
 ```
 
-2. Configure MCP servers in `appsettings.Development.json`:
-```json
-{
-  "McpMeshOptions": {
-    "Servers": [
-      {
-        "Id": "everything-server",
-        "Name": "MCP Everything Server",
-        "Type": "stdio",
-        "Command": "npx",
-        "Args": ["@modelcontextprotocol/server-everything"],
-        "Enabled": true,
-        "TimeoutMs": 30000
-      },
-      {
-        "Id": "time-server",
-        "Name": "Time MCP Server",
-        "Type": "stdio",
-        "Command": "uvx",
-        "Args": ["mcp-server-time"],
-        "Enabled": true,
-        "TimeoutMs": 30000
-      }
-    ]
-  }
-}
-```
-
-3. Run the application:
+2. Run the application:
 ```bash
 dotnet run
 ```
 
-4. Access the API at `http://localhost:5293`
+3. The service will start on `http://localhost:5293`
 
 ## Configuration
 
-### MCP Server Configuration
-
-Configure MCP servers in your `appsettings.json`:
+Configure MCP servers in your `appsettings.Development.json`:
 
 ```json
 {
@@ -91,7 +58,7 @@ Configure MCP servers in your `appsettings.json`:
         "TimeoutMs": 30000
       },
       {
-        "Id": "time-server",
+        "Id": "time-server", 
         "Name": "Time MCP Server",
         "Type": "stdio",
         "Command": "uvx",
@@ -105,83 +72,31 @@ Configure MCP servers in your `appsettings.json`:
 }
 ```
 
-### Authentication (Optional)
+## Endpoints
 
-Enable authentication by configuring the authentication section:
+### Health Endpoints
+- `GET /health/live` - Liveness probe
+- `GET /health/ready` - Readiness probe  
+- `GET /health/startup` - Startup probe
 
-```json
-{
-  "McpMeshOptions": {
-    "Authentication": {
-      "Enabled": true,
-      "LoginRequest": {
-        "Url": "https://your-auth-server.com/api/auth/login",
-        "Method": "POST",
-        "BodyTemplate": "{\"username\": \"{username}\",\"password\": \"{password}\"}",
-        "ContentType": "application/json"
-      }
-    }
-  }
-}
-```
-
-## API Endpoints
-
-### Tool Access (Internal API)
-- `GET /api/tools` - List all aggregated tools
-- `GET /api/{mcpId}/tools` - List tools from specific MCP server
-- `POST /api/tools/{toolId}/invoke` - Invoke a specific tool
-
-### MCP Protocol Endpoints (Claude Desktop Integration)
-- `POST /mcp/tools/list` - List available tools (MCP protocol)
-- `POST /mcp/resources/list` - List available resources (MCP protocol)  
-- `POST /mcp/tools/call` - Call a tool (MCP protocol)
-- `POST /mcp/resources/read` - Read a resource (MCP protocol)
-
-### Status and Monitoring
-- `GET /api/status` - Get status of all MCP servers
-- `GET /api/status/{mcpId}` - Get detailed status of specific MCP server
-- `GET /health` - Health check endpoint
-
-### Authentication
-- `POST /api/auth/token` - Generate authentication token
+### MCP Protocol Endpoints
+- MCP protocol endpoints are available at `/{packageId}` 
+- Supports `tools/list` and `tools/call` MCP operations
 
 ## Docker Deployment
 
-1. Build the Docker image:
 ```bash
 docker build -t mcpmesh .
-```
-
-2. Run with Docker:
-```bash
 docker run -p 5293:80 mcpmesh
 ```
 
 ## Kubernetes Deployment
-
-Deploy to Kubernetes using the provided manifests:
 
 ```bash
 kubectl apply -f deployment/namespace.yaml
 kubectl apply -f deployment/configmap.yaml
 kubectl apply -f deployment/deployment.yaml
 kubectl apply -f deployment/service.yaml
-```
-
-## Claude Desktop Integration
-
-To use McpMesh with Claude Desktop, add it as an MCP server in your Claude Desktop configuration:
-
-```json
-{
-  "mcpServers": {
-    "mcpmesh": {
-      "command": "curl",
-      "args": ["-X", "POST", "http://localhost:5293/mcp/tools/list"]
-    }
-  }
-}
 ```
 
 ## Contributing
@@ -194,8 +109,3 @@ To use McpMesh with Claude Desktop, add it as an MCP server in your Claude Deskt
 ## License
 
 MIT License - see LICENSE file for details.
-
-## Support
-
-- GitHub Issues: https://github.com/dmatvienco/McpMesh/issues
-- Documentation: https://github.com/dmatvienco/McpMesh/wiki
