@@ -130,6 +130,13 @@ kubectl apply -f deployment/deployment.yaml
 kubectl apply -f deployment/service.yaml
 ```
 
+## Future Plans
+
+- **OAuth Integration**: Add support for OAuth providers (GitHub, Google, etc.) for secure authentication
+- **Claude Desktop Integration**: Native integration with Claude Desktop as an MCP connector
+- **Web UI**: Management interface for configuring MCP servers and monitoring status
+- **Enhanced Security**: Role-based access control and API key management
+
 ## Contributing
 
 1. Fork the repository

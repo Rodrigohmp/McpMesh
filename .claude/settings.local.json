@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker build:*)"
+      "Bash(docker build:*)",
+      "mcp__github__get_file_contents",
+      "mcp__github__list_branches"
     ],
     "deny": [],
     "ask": []
