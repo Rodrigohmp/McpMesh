@@ -10,14 +10,9 @@ A .NET 9 service for aggregating multiple Model Context Protocol (MCP) servers.
 - **Health Monitoring**: Built-in health endpoints for container orchestration
 - **Containerized**: Docker support with Kubernetes deployment manifests
 
-## Quick Start
+## Quick Start with Docker
 
-### Prerequisites
-
-- .NET 9 SDK
-- Node.js and Python (for MCP servers that require them)
-
-### Local Development
+The easiest way to run McpMesh is with Docker, which includes all necessary dependencies:
 
 1. Clone the repository:
 ```bash
@@ -25,25 +20,36 @@ git clone https://github.com/dmatvienco/McpMesh.git
 cd McpMesh
 ```
 
-2. Run the application:
+2. Build and run with Docker:
+```bash
+docker build -t mcpmesh .
+docker run -p 5293:80 mcpmesh
+```
+
+3. The service will be available at `http://localhost:5293`
+
+### Local Development
+
+For development without Docker, you'll need:
+- .NET 9 SDK
+- Node.js and Python (for MCP servers)
+
 ```bash
 dotnet run
 ```
 
-3. The service will start on `http://localhost:5293`
-
 ## Configuration
 
-Configure MCP servers in your `appsettings.Development.json`:
+Configure MCP servers in your `appsettings.json`. The Docker image includes all necessary dependencies to run the example MCP servers.
 
 ```json
 {
   "McpMeshOptions": {
     "Packages": [
       {
+        "Enabled": true,
         "Id": "example-package",
-        "Servers": ["everything-server", "time-server"],
-        "Enabled": true
+        "Servers": ["everything-server", "time-server"]
       }
     ],
     "Servers": [
@@ -58,7 +64,7 @@ Configure MCP servers in your `appsettings.Development.json`:
         "TimeoutMs": 30000
       },
       {
-        "Id": "time-server", 
+        "Id": "time-server",
         "Name": "Time MCP Server",
         "Type": "stdio",
         "Command": "uvx",
@@ -72,6 +78,10 @@ Configure MCP servers in your `appsettings.Development.json`:
 }
 ```
 
+The default configuration includes two example MCP servers:
+- **everything-server**: 11 demo tools (echo, add, longRunningOperation, etc.)  
+- **time-server**: 2 time-related tools (get_current_time, convert_time)
+
 ## Endpoints
 
 ### Health Endpoints
@@ -82,6 +92,27 @@ Configure MCP servers in your `appsettings.Development.json`:
 ### MCP Protocol Endpoints
 - MCP protocol endpoints are available at `/{packageId}` 
 - Supports `tools/list` and `tools/call` MCP operations
+
+## Testing
+
+Test the MCP protocol with curl:
+
+```bash
+# Test health
+curl http://localhost:5293/health/live
+
+# Test MCP tools/list (should return 13 tools from both servers)
+curl -X POST http://localhost:5293/example-package \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list"}'
+
+# Test calling a tool (echo example)
+curl -X POST http://localhost:5293/example-package \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"echo","arguments":{"message":"Hello McpMesh!"}}}'
+```
+
+For a more interactive experience, you can use the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) tool, which provides a web interface to explore and test MCP servers. The Inspector can connect to McpMesh and allows you to browse available tools, examine their schemas, and execute them with a user-friendly interface.
 
 ## Docker Deployment
 
