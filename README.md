@@ -1,3 +1,6 @@
+![License](https://img.shields.io/github/license/dmatvienco/McpMesh)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com)
+
 # McpMesh
 
 A .NET 9 service for aggregating multiple Model Context Protocol (MCP) servers.
